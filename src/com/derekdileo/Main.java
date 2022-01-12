@@ -1,7 +1,5 @@
 package com.derekdileo;
 
-import org.w3c.dom.Node;
-
 import java.io.File;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -10,38 +8,38 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 
 public class Main {
-
-    public static Path currentPath;
-
     public static void main(String[] args) throws Exception {
-        currentPath = Paths.get(System.getProperty("user.dir"));
+        Path currentPath = Paths.get(System.getProperty("user.dir"));
         System.out.println("\ncurrentPath = " + currentPath + "\n");
 
         listDir(currentPath, 0);
     }
-    
-    public static void listDir(Path path, int depth) throws Exception {
 
+    public static void listDir(Path path, int depth) throws Exception {
         BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
 
+        // Skip printing hidden files and folders
+        // (although numFiles and totalSize still account for them.)
         if (!path.getFileName().toString().startsWith(".")) {
 
             if (attr.isDirectory()) {
+                // Use File Class to examine contents of directory
                 File file = new File(String.valueOf(path));
                 long totalSize = getFolderSize(file);
                 int numFiles = getFileCountInFolder(file);
 
-                // list available sub-directories
+                // Use DirectoryStream to list available sub-directories
                 DirectoryStream<Path> paths = Files.newDirectoryStream(path);
 
-                // print directory name, number of files, total size of files, list of child folders
-                System.out.println(spacesForDepth(depth) + " >" + path.getFileName() + " [Directory Size: " + totalSize + " B], [Number of Files: " + numFiles + "]");
+                // Print directory name and number and total size (in Bytes) of enclosed files
+                System.out.println(spacesForDepth(depth) + " >" + path.getFileName() + " [Number of Files: " + numFiles + "], [Directory Size: " + totalSize + " B]");
 
-                // if subdirectory(s) found, call listDir recursively
+                // If subdirectory(s) found, call listDir recursively
                 for (Path tempPath : paths) {
                     listDir(tempPath, depth + 1);
                 }
             } else {
+                // Print file name and size (in Bytes)
                 System.out.println(spacesForDepth(depth) + " - - " + path.getFileName() + " [File Size: " + attr.size() + " B]");
             }
 
