@@ -29,7 +29,7 @@ public class Main {
         if (attr.isDirectory()) {
             // Use File Class to examine contents of directory
             File file = new File(String.valueOf(path));
-            long totalSize = getFolderSize(file);
+            long totalSize = getSizeOfContentsInFolder(file);
             int numFiles = getFileCountInFolder(file);
 
             // Use DirectoryStream to list available sub-directories
@@ -49,7 +49,7 @@ public class Main {
 
     }
 
-    private static long getFolderSize(File folder) {
+    private static long getSizeOfContentsInFolder(File folder) {
         long length = 0;
 
         File[] files = folder.listFiles();
@@ -60,7 +60,7 @@ public class Main {
             if (files[i].isFile()) {
                 length += files[i].length();
             } else {
-                length += getFolderSize(files[i]);
+                length += getSizeOfContentsInFolder(files[i]);
             }
         }
         return length;
